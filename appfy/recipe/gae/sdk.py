@@ -93,8 +93,11 @@ class Recipe(download.Recipe):
                 request = HeadRequest(url)
                 urllib2.urlopen(request)
             except urllib2.HTTPError as e:
-                # 403 - not yet published, try next one
-                if e.code != 403:
+                if e.code in (401, 403):
+                    self.logger.info(
+                        "SDK at '{}' is not yet the current release, "
+                        "skipping.".format(url))
+                else:
                     raise
             else:
                 return url
